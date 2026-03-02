@@ -7,7 +7,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Poppins', sans-serif; }
@@ -118,7 +118,7 @@ function HomeScreen() {
   return (
     <div style={{ flex: 1, overflow: "auto", padding: "0 16px", position: "relative" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0 12px" }}>
-        <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: 22, color: C.dark }}>Circles</span>
+        <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 900, fontSize: 22, color: C.dark }}>Circles</span>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <button style={{ background: C.tealLight, border: "none", borderRadius: 20, padding: "6px 14px",
             fontSize: 12, fontWeight: 600, color: C.teal, cursor: "pointer" }}>Invite a friend</button>
@@ -255,7 +255,7 @@ function HomeScreen() {
             {/* Simulated landing page */}
             <div style={{ padding: "16px 16px 10px", background: C.bg }}>
               <div style={{ textAlign: "center", marginBottom: 8 }}>
-                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800,
+                <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 900,
                   fontSize: 18, color: C.dark }}>Circles</span>
               </div>
 
@@ -333,7 +333,7 @@ function HomeScreen() {
 
             {/* Header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800,
+              <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 900,
                 fontSize: 18, color: C.dark }}>Join Circles</span>
               <button onClick={() => { setShowSignUp(false); setSignUpStep(0); setSponsorCode(""); }}
                 style={{ background: "none", border: "none", fontSize: 18, color: C.gray, cursor: "pointer" }}>✕</button>
@@ -599,7 +599,7 @@ function PartnersScreen() {
                 <div style={{ width: 32, height: 32, borderRadius: "50%",
                   background: "linear-gradient(135deg, " + C.teal + ", #2BA5A5)",
                   display: "flex", alignItems: "center", justifyContent: "center", color: C.white, fontSize: 14 }}>✦</div>
-                <span style={{ fontWeight: 700, fontSize: 14, color: C.dark }}>Circles</span>
+                <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 900, fontSize: 14, color: C.dark }}>Circles</span>
               </div>
               <button onClick={handleDismissAll}
                 style={{ background: "none", border: "none", fontSize: 16, color: C.gray, cursor: "pointer" }}>✕</button>
@@ -655,7 +655,7 @@ function PartnersScreen() {
                 background: "linear-gradient(135deg, " + C.teal + ", #2BA5A5)",
                 display: "flex", alignItems: "center", justifyContent: "center", color: C.white, fontSize: 14 }}>✦</div>
               <div>
-                <span style={{ fontWeight: 700, fontSize: 13, color: C.dark }}>Circles</span>
+                <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 900, fontSize: 13, color: C.dark }}>Circles</span>
                 <div style={{ fontSize: 10, color: C.green }}>● Online</div>
               </div>
             </div>
@@ -735,7 +735,7 @@ function AgentChat() {
           background: "linear-gradient(135deg, " + C.teal + ", #2BA5A5)",
           display: "flex", alignItems: "center", justifyContent: "center", color: C.white, fontSize: 16 }}>✦</div>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 15, color: C.dark }}>Circles</div>
+          <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 900, fontSize: 15, color: C.dark }}>Circles</div>
           <div style={{ fontSize: 11, color: C.green }}>● Online</div>
         </div>
       </div>
@@ -770,74 +770,159 @@ function AgentChat() {
 }
 
 function NetworkScreen() {
+  const [showChain, setShowChain] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState(null);
+
+  const connections = [
+    { name: "Clara M.", degree: "1st", sponsors: 32 },
+    { name: "James R.", degree: "1st", sponsors: 18 },
+    { name: "Priya S.", degree: "1st", sponsors: 24 },
+  ];
+
+  const chainNodes = [
+    { initials: "You", name: "You", meta: "Your network", type: "you" },
+    { initials: "CM", name: "Clara M.", meta: "1st connection · 32 sponsors", type: "known", deg: "1st" },
+    { initials: "AK", name: "Alex K.", meta: "2nd connection", type: "known", deg: "2nd" },
+    { initials: "EL", name: "Emma L.", meta: "3rd connection", type: "known", deg: "3rd" },
+  ];
+
+  if (showChain) {
+    return (
+      <div style={{ flex: 1, overflow: "auto", padding: "0 16px" }}>
+        <div style={{ padding: "8px 0 12px", display: "flex", alignItems: "center", gap: 10 }}>
+          <span onClick={() => setShowChain(false)}
+            style={{ fontSize: 18, cursor: "pointer", color: C.dark }}>←</span>
+          <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 18, color: C.dark }}>Your connection</span>
+        </div>
+
+        {/* Target banner */}
+        <div style={{ background: C.teal, borderRadius: 14, padding: "12px 16px", marginBottom: 16,
+          display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.2)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontWeight: 700, fontSize: 13, color: C.white }}>EL</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 14, color: C.white }}>Emma L.</div>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.8)" }}>3 connections away from you</div>
+          </div>
+          <div style={{ background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: "4px 10px",
+            fontSize: 11, fontWeight: 700, color: C.white }}>3rd</div>
+        </div>
+
+        {/* Chain */}
+        <div style={{ background: C.white, borderRadius: 16, padding: "16px 16px 20px",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.06)", marginBottom: 16 }}>
+          {chainNodes.map((node, i) => (
+            <div key={i}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "6px 0" }}>
+                <div style={{ width: 38, height: 38, borderRadius: "50%",
+                  background: node.type === "you" ? C.teal : C.tealLight,
+                  color: node.type === "you" ? C.white : C.teal,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontWeight: 700, fontSize: 12, flexShrink: 0,
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)" }}>
+                  {node.initials}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: C.dark }}>{node.name}</div>
+                  <div style={{ fontSize: 10, color: C.gray }}>{node.meta}</div>
+                </div>
+                {node.deg && (
+                  <div style={{ background: C.tealLight, color: C.teal, fontSize: 10, fontWeight: 700,
+                    padding: "3px 10px", borderRadius: 8 }}>{node.deg}</div>
+                )}
+              </div>
+              {i < chainNodes.length - 1 && (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
+                  padding: "2px 0", marginLeft: 18 }}>
+                  {[0,1,2].map(d => (
+                    <div key={d} style={{ width: 4, height: 4, borderRadius: "50%",
+                      background: C.tealLight, marginBottom: 3 }} />
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Footer text */}
+        <div style={{ textAlign: "center", padding: "0 10px", marginBottom: 16 }}>
+          <p style={{ fontSize: 12, color: C.gray, lineHeight: 1.5 }}>
+            Your friend <span style={{ color: C.teal, fontWeight: 700 }}>Clara M.</span> is connected to Emma through one parent. That's how trust travels.
+          </p>
+        </div>
+
+        {/* Back button */}
+        <button onClick={() => setShowChain(false)}
+          style={{ width: "100%", background: C.teal, color: C.white, border: "none",
+          borderRadius: 14, padding: "14px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+          Back to network
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div style={{ flex: 1, overflow: "auto", padding: "0 16px" }}>
       <div style={{ padding: "8px 0 12px" }}>
-        <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: 20, color: C.dark }}>Your Trust Network</span>
+        <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: 20, color: C.dark }}>My Network</span>
         <p style={{ fontSize: 12.5, color: C.gray, marginTop: 4, lineHeight: 1.4 }}>
-          Every recommendation traces back to someone you know.
+          Your network is your filter.
         </p>
       </div>
-      <div style={{ background: C.white, borderRadius: 16, padding: 20, marginBottom: 16,
-        boxShadow: "0 1px 4px rgba(0,0,0,0.06)", position: "relative", minHeight: 280 }}>
-        <div style={{ position: "absolute", left: "50%", top: 30, transform: "translateX(-50%)",
-          display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2 }}>
-          <div style={{ width: 50, height: 50, borderRadius: "50%", background: C.teal, color: C.white,
-            display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14,
-            boxShadow: "0 0 0 3px " + C.white + ", 0 0 0 5px " + C.teal }}>You</div>
-        </div>
-        {[
-          { name: "Clara M.", x: "15%", y: 110 },
-          { name: "Priya S.", x: "50%", y: 120 },
-          { name: "James R.", x: "82%", y: 110 },
-        ].map((node, i) => (
-          <div key={i}>
-            <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }}>
-              <line x1="50%" y1="55" x2={node.x} y2={node.y + 18} stroke={C.tealLight} strokeWidth="2" strokeDasharray="4 3" />
-            </svg>
-            <div style={{ position: "absolute", left: node.x, top: node.y, transform: "translateX(-50%)",
-              display: "flex", flexDirection: "column", alignItems: "center", zIndex: 1 }}>
-              <div style={{ width: 40, height: 40, borderRadius: "50%", background: C.tealLight, color: C.teal,
-                display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 11 }}>
-                {node.name.split(" ").map(n => n[0]).join("")}
-              </div>
-              <span style={{ fontSize: 10, fontWeight: 600, color: C.dark, marginTop: 4 }}>{node.name}</span>
-            </div>
-          </div>
-        ))}
-        {[
-          { name: "Sofia K.", role: true, x: "5%", y: 200, px: "15%" },
-          { name: "Anna B.", x: "28%", y: 210, px: "15%" },
-          { name: "Dr. Chen", x: "42%", y: 210, px: "50%" },
-          { name: "Amara J.", role: true, x: "60%", y: 200, px: "50%" },
-          { name: "Woodland", x: "75%", y: 210, px: "82%" },
-          { name: "Tom H.", x: "93%", y: 200, px: "82%" },
-        ].map((node, i) => (
-          <div key={i}>
-            <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }}>
-              <line x1={node.px} y1="155" x2={node.x} y2={node.y + 14} stroke="#E8E8E8" strokeWidth="1.5" strokeDasharray="3 3" />
-            </svg>
-            <div style={{ position: "absolute", left: node.x, top: node.y, transform: "translateX(-50%)",
-              display: "flex", flexDirection: "column", alignItems: "center", zIndex: 1 }}>
-              <div style={{ width: 32, height: 32, borderRadius: "50%",
-                background: node.role ? C.bgWarm : C.grayLight,
-                color: node.role ? "#B85042" : C.gray,
-                display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 9 }}>
-                {node.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
-              </div>
-              <span style={{ fontSize: 9, color: C.gray, marginTop: 3, textAlign: "center", maxWidth: 56, lineHeight: 1.2 }}>{node.name}</span>
-            </div>
-          </div>
-        ))}
-      </div>
+
+      {/* Stats */}
       <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-        {[{ n: "12", l: "connections" }, { n: "3", l: "trusted partners" }, { n: "2nd", l: "deepest link" }].map((s, i) => (
+        {[{ n: "12", l: "connections" }, { n: "3", l: "trusted partners" }, { n: "3rd", l: "deepest link" }].map((s, i) => (
           <div key={i} style={{ flex: 1, background: C.white, borderRadius: 12, padding: "12px 10px",
             textAlign: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
             <div style={{ fontSize: 20, fontWeight: 800, color: C.teal }}>{s.n}</div>
             <div style={{ fontSize: 10, color: C.gray, marginTop: 2 }}>{s.l}</div>
           </div>
         ))}
+      </div>
+
+      {/* 1st degree connections */}
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: C.dark, marginBottom: 10 }}>Your connections</div>
+        {connections.map((c, i) => (
+          <div key={i} style={{ background: C.white, borderRadius: 12, padding: "12px 14px", marginBottom: 8,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.06)", display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: C.tealLight,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontWeight: 700, fontSize: 11, color: C.teal, flexShrink: 0 }}>
+              {c.name.split(" ").map(n => n[0]).join("")}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, fontSize: 13, color: C.dark }}>{c.name}</div>
+              <div style={{ fontSize: 10, color: C.gray }}>{c.degree} connection · {c.sponsors} sponsors</div>
+            </div>
+            <div style={{ background: C.tealLight, color: C.teal, fontSize: 10, fontWeight: 700,
+              padding: "3px 10px", borderRadius: 8 }}>{c.degree}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* See a chain example */}
+      <div onClick={() => setShowChain(true)}
+        style={{ background: C.tealLight, borderRadius: 14, padding: "14px 16px", marginBottom: 16,
+          cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex" }}>
+          {["You", "CM", "AK", "EL"].map((ini, i) => (
+            <div key={i} style={{ width: 24, height: 24, borderRadius: "50%",
+              background: i === 0 ? C.teal : C.tealLight, color: i === 0 ? C.white : C.teal,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 7, fontWeight: 700, marginLeft: i > 0 ? -6 : 0,
+              border: "2px solid " + C.white, zIndex: 4 - i }}>
+              {ini}
+            </div>
+          ))}
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: C.teal }}>See how you know Emma L.</div>
+          <div style={{ fontSize: 10, color: C.gray }}>3 connections away</div>
+        </div>
+        <span style={{ fontSize: 16, color: C.teal }}>›</span>
       </div>
     </div>
   );
@@ -847,10 +932,10 @@ function App() {
   const [screen, setScreen] = useState("home");
   return (
     <div style={{ minHeight: "100vh",
-      background: "linear-gradient(135deg, #E8F4F8 0%, #F2E0D0 50%, #E8F4F8 100%)",
+      background: "linear-gradient(135deg, #E8F2F4 0%, #DDBEA8 50%, #E8F2F4 100%)",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       padding: "40px 20px" }}>
-      <h1 style={{ fontFamily: "'Poppins', sans-serif", fontSize: 28, fontWeight: 800,
+      <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 28, fontWeight: 900,
         color: C.dark, marginBottom: 4, textAlign: "center" }}>Circles</h1>
       <p style={{ color: C.gray, fontSize: 14, marginBottom: 28, textAlign: "center" }}>App concept — UI/UX exploration</p>
       <PhoneFrame>
