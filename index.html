@@ -1,865 +1,881 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=1456" />
-<title>Circles — Connection Chain v2</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circles — App Concept</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  :root {
-    --bg: #E8F4F8; --teal: #1A7A7A; --teal-light: #D4EEF0;
-    --warm: #F2E0D0; --warm-deep: #E8C9B8; --accent: #F5C35C;
-    --dark: #1A1A1A; --gray: #888888; --gray-light: #F5F5F5;
-    --white: #FFFFFF; --rose: #B85042; --green: #4CAF50;
-  }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #F0F4F5;
-    color: var(--dark);
-  }
-
-  /* ========== SWITCHER ========== */
-  .view-switcher {
-    display: flex; justify-content: center; gap: 12px; padding: 32px 0 24px;
-  }
-  .view-btn {
-    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
-    padding: 10px 28px; border-radius: 24px; border: none; cursor: pointer;
-    transition: all 0.25s; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
-  .view-btn.active { background: var(--teal); color: var(--white); }
-  .view-btn:not(.active) { background: var(--white); color: var(--dark); }
-  .section { display: none; }
-  .section.active { display: flex; justify-content: center; padding-bottom: 60px; }
-
-  /* ========== PHONE FRAME ========== */
-  .phone-wrap { display: flex; gap: 28px; align-items: flex-start; justify-content: center; }
-  .phone {
-    width: 375px; height: 812px; background: var(--white);
-    border-radius: 44px; box-shadow: 0 12px 60px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
-    overflow: hidden; position: relative; flex-shrink: 0;
-  }
-  .phone-notch {
-    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-    width: 160px; height: 30px; background: var(--dark);
-    border-radius: 0 0 20px 20px; z-index: 10;
-  }
-  .phone-bar {
-    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-    width: 134px; height: 5px; background: var(--dark);
-    border-radius: 3px; z-index: 10;
-  }
-  .phone-content { height: 100%; overflow-y: auto; padding: 50px 0 30px; }
-
-  /* ========== SCREEN 1: FEED POST WITH RECOMMENDATION ========== */
-
-  /* Status bar spacer */
-  .feed-top { padding: 8px 20px 0; }
-
-  /* Feed header */
-  .feed-header {
-    padding: 0 20px;
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  .feed-header h1 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 800; font-size: 24px; color: var(--dark);
-  }
-  .feed-header-icon {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--teal-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; color: var(--teal);
-  }
-
-  /* Category pills */
-  .feed-pills {
-    display: flex; gap: 8px; padding: 0 20px; margin-bottom: 18px;
-    overflow-x: auto;
-  }
-  .feed-pill {
-    padding: 7px 16px; border-radius: 20px; font-size: 12.5px;
-    font-weight: 600; white-space: nowrap; flex-shrink: 0;
-    border: 1.5px solid var(--teal-light); color: var(--teal);
-    background: var(--white);
-  }
-  .feed-pill.active {
-    background: var(--teal); color: var(--white); border-color: var(--teal);
-  }
-
-  /* Post card */
-  .post-card {
-    margin: 0 16px 14px; background: var(--white);
-    border-radius: 16px; padding: 16px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
-  }
-  .post-author {
-    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
-  }
-  .post-avatar {
-    width: 40px; height: 40px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 12px; flex-shrink: 0;
-  }
-  .post-avatar.parent-av {
-    background: var(--teal-light); color: var(--teal);
-  }
-  .post-author-info .post-name {
-    font-weight: 600; font-size: 13.5px; color: var(--dark);
-  }
-  .post-author-info .post-degree {
-    font-size: 11px; color: var(--gray); margin-top: 1px;
-  }
-  .post-author-info .post-degree strong { color: var(--teal); font-weight: 600; }
-  .post-time {
-    margin-left: auto; font-size: 11px; color: var(--gray);
-  }
-  .post-body {
-    font-size: 13.5px; color: var(--dark); line-height: 1.55;
-    margin-bottom: 12px;
-  }
-  .post-body .mention {
-    color: var(--teal); font-weight: 600; cursor: pointer;
-    text-decoration: underline;
-    text-decoration-color: var(--teal-light);
-    text-underline-offset: 2px;
-  }
-  .post-partner-card {
-    background: var(--gray-light); border-radius: 12px;
-    padding: 12px 14px; display: flex; align-items: center; gap: 12px;
-    margin-bottom: 12px;
-  }
-  .post-partner-avatar {
-    width: 42px; height: 42px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--warm), var(--warm-deep));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; color: var(--rose);
-    flex-shrink: 0;
-  }
-  .post-partner-info .pp-name { font-weight: 600; font-size: 13px; color: var(--dark); }
-  .post-partner-info .pp-role { font-size: 11.5px; color: var(--rose); font-weight: 500; margin-top: 1px; }
-  .post-partner-info .pp-rec {
-    font-size: 10.5px; color: var(--gray); margin-top: 3px;
-  }
-  .post-partner-info .pp-rec strong { color: var(--teal); }
-  .post-actions {
-    display: flex; gap: 20px; padding-top: 8px;
-    border-top: 1px solid #f0f0f0;
-  }
-  .post-action {
-    font-size: 12px; color: var(--gray); font-weight: 500;
-    display: flex; align-items: center; gap: 4px;
-  }
-
-  /* Tappable connection hint */
-  .connection-hint {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--teal-light); border-radius: 12px;
-    padding: 10px 14px; margin: 0 16px 14px;
-    cursor: pointer; transition: background 0.2s;
-  }
-  .connection-hint:hover { background: #c4e6e8; }
-  .connection-hint-chain {
-    display: flex; align-items: center; gap: 0;
-  }
-  .ch-mini {
-    width: 28px; height: 28px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 9px; font-weight: 700;
-    border: 2px solid var(--white);
-    margin-right: -6px; position: relative;
-  }
-  .ch-mini.you-m { background: var(--teal); color: var(--white); z-index: 4; }
-  .ch-mini.p1 { background: var(--teal-light); color: var(--teal); z-index: 3; }
-  .ch-mini.p2 { background: #e0eded; color: var(--gray); z-index: 2; }
-  .ch-mini.target { background: var(--teal-light); color: var(--teal); z-index: 1; margin-right: 0; }
-  .connection-hint-text {
-    font-size: 12.5px; color: var(--teal); font-weight: 600;
-    margin-left: 12px;
-  }
-  .connection-hint-arrow {
-    margin-left: auto; font-size: 14px; color: var(--teal);
-  }
-
-  /* ========== SCREEN 2: CONNECTION CHAIN ========== */
-  .chain-screen { padding: 50px 0 0; height: 100%; display: flex; flex-direction: column; }
-
-  .chain-header {
-    padding: 10px 20px 18px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .chain-back {
-    font-size: 22px; color: var(--dark); cursor: pointer;
-    line-height: 1;
-  }
-  .chain-title {
-    font-family: 'Playfair Display', serif;
-    font-weight: 800; font-size: 20px; color: var(--dark);
-  }
-
-  /* Target member banner */
-  .chain-target-banner {
-    margin: 0 20px 6px;
-    background: var(--teal);
-    border-radius: 16px;
-    padding: 16px 18px;
-    display: flex; align-items: center; gap: 14px;
-  }
-  .ctb-avatar {
-    width: 48px; height: 48px; border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 700; color: var(--white);
-    flex-shrink: 0;
-    border: 2px solid rgba(255,255,255,0.3);
-  }
-  .ctb-info .ctb-name { color: var(--white); font-weight: 600; font-size: 15px; }
-  .ctb-info .ctb-meta { color: rgba(255,255,255,0.65); font-size: 12px; margin-top: 2px; }
-  .ctb-degree-badge {
-    margin-left: auto;
-    background: rgba(255,255,255,0.2);
-    color: var(--white);
-    font-size: 11px; font-weight: 700;
-    padding: 4px 10px; border-radius: 10px;
-  }
-
-  /* Chain container */
-  .chain-body {
-    flex: 1; overflow-y: auto; padding: 16px 24px 0;
-  }
-
-  .chain-node-row {
-    display: flex; align-items: center; gap: 14px;
-    padding: 6px 0;
-  }
-  .cn-avatar {
-    width: 52px; height: 52px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  }
-  .cn-avatar.you-av { background: var(--teal); color: var(--white); font-size: 14px; }
-  .cn-avatar.known {
-    background: var(--teal-light); color: var(--teal); font-size: 14px;
-  }
-  .cn-avatar.unknown {
-    background: #e8eded; color: #aaa; font-size: 13px;
-    border: 2px dashed #ccc;
-  }
-  .cn-info { flex: 1; }
-  .cn-name { font-weight: 600; font-size: 14.5px; color: var(--dark); }
-  .cn-name.faded { color: var(--gray); }
-  .cn-meta { font-size: 12px; color: var(--gray); margin-top: 2px; }
-  .cn-meta strong { color: var(--teal); font-weight: 600; }
-  .cn-degree {
-    background: var(--teal-light); color: var(--teal);
-    font-size: 10px; font-weight: 700;
-    padding: 3px 9px; border-radius: 8px;
-  }
-
-  /* Connector between nodes */
-  .chain-connector {
-    display: flex; align-items: center;
-    padding: 2px 0 2px 22px;
-    gap: 0;
-  }
-  .cc-line {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 4px; padding: 3px 0;
-  }
-  .cc-dot {
-    width: 4px; height: 4px; border-radius: 50%;
-    background: var(--teal-light);
-  }
-  .cc-tag {
-    display: inline-block;
-    background: var(--gray-light);
-    border-radius: 12px; padding: 5px 14px;
-    font-size: 12px; font-weight: 600; color: var(--dark);
-    margin-left: 14px;
-  }
-
-  /* Bottom panel */
-  .chain-footer {
-    padding: 12px 20px 20px;
-    background: linear-gradient(transparent, var(--white) 40%);
-  }
-  .chain-footer-note {
-    text-align: center;
-    font-size: 11.5px; color: var(--gray); line-height: 1.45;
-    margin-bottom: 12px;
-  }
-  .chain-footer-note em { color: var(--teal); font-style: normal; font-weight: 600; }
-  .chain-cta {
-    display: block; width: 100%; padding: 14px;
-    background: var(--teal); color: var(--white);
-    border: none; border-radius: 24px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px; font-weight: 600;
-    cursor: pointer; text-align: center;
-  }
-
-  /* Arrow between phones */
-  .phone-arrow {
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px; color: var(--teal); padding: 0 4px;
-    align-self: center;
-  }
-
-  /* Notes panel */
-  .mockup-notes { max-width: 320px; padding-top: 40px; }
-  .mockup-notes h2 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 800; font-size: 22px; color: var(--dark);
-    margin-bottom: 16px; line-height: 1.3;
-  }
-  .mockup-notes p {
-    font-size: 14px; color: var(--gray); line-height: 1.6; margin-bottom: 14px;
-  }
-  .mn-label {
-    font-size: 11px; font-weight: 700; color: var(--teal);
-    text-transform: uppercase; letter-spacing: 1px;
-    margin-bottom: 8px; margin-top: 22px;
-  }
-  .mn-highlight {
-    background: var(--teal-light);
-    border-left: 3px solid var(--teal);
-    padding: 12px 14px; border-radius: 0 10px 10px 0;
-    font-size: 13px; color: var(--dark); line-height: 1.5;
-    margin-top: 10px;
-  }
-  .mn-highlight strong { color: var(--teal); }
-
-  /* ========== DECK SLIDE ========== */
-  .slide-wrap { flex-direction: column; align-items: center; gap: 16px; }
-  .slide-label {
-    font-size: 13px; color: var(--gray); font-weight: 500; letter-spacing: 0.5px;
-  }
-  .slide {
-    width: 1456px; height: 840px; background: var(--bg);
-    position: relative; overflow: hidden;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.1); border-radius: 4px;
-  }
-  .slide .logo {
-    position: absolute; bottom: 68px; left: 64px;
-    font-family: 'Playfair Display', serif;
-    font-weight: 800; font-size: 18px; color: var(--dark);
-  }
-
-  /* Title */
-  .slide .title-area {
-    position: absolute; top: 42px; left: 64px; right: 64px;
-  }
-  .slide .title-area h1 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 800; font-size: 36px;
-    color: var(--dark); line-height: 1.2; letter-spacing: -0.5px;
-  }
-  .slide .title-divider {
-    width: 260px; height: 2.5px;
-    background: linear-gradient(90deg, var(--teal), var(--teal-light));
-    margin-top: 12px; border-radius: 2px;
-  }
-
-  /* ===========================================
-     LAYOUT MATH for 1456 × 840 slide:
-     - Margins: 64px each side
-     - Usable width: 1456 - 128 = 1328px
-     - Left col (chain): 380px
-     - Gap: 80px
-     - Right col (pillars): 520px
-     - Remaining: 1328 - 380 - 80 - 520 = 348px → absorb into right margin
-     - Left col left edge: 64px
-     - Right col left edge: 64 + 380 + 80 = 524px
-     - Title: 42 + (36*1.2*2) + 12 ≈ 140px → content starts 165px
-     - Bottom bar: 52px → content ends 788px
-     =========================================== */
-
-  /* LEFT COLUMN: chain */
-  .slide-chain {
-    position: absolute;
-    top: 170px; left: 64px;
-    width: 380px;
-  }
-
-  /* Chain nodes: avatar + text + degree badge in a tight row */
-  .sc-node {
-    display: flex; align-items: center; gap: 12px;
-    height: 52px;
-  }
-  .sc-av {
-    width: 44px; height: 44px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    font-size: 12.5px;
-  }
-  .sc-av.you { background: var(--teal); color: var(--white); font-size: 13px; }
-  .sc-av.known { background: var(--teal-light); color: var(--teal); }
-  .sc-info { flex: 1; min-width: 0; }
-  .sc-info .sc-name { font-weight: 700; font-size: 14px; color: var(--dark); }
-  .sc-info .sc-meta { font-size: 11px; color: var(--gray); margin-top: 1px; }
-
-  /* Degree badge: aligned right within the fixed-width row */
-  .sc-deg {
-    flex-shrink: 0;
-    width: 42px; text-align: center;
-    background: var(--white); color: var(--teal);
-    font-size: 10.5px; font-weight: 700;
-    padding: 3px 0; border-radius: 10px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  }
-
-  /* Connectors: dots under avatar centre (22px = 44/2) */
-  .sc-conn {
-    display: flex; align-items: center;
-    height: 32px;
-    padding-left: 20px;
-  }
-  .sc-dots {
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-  }
-  .sc-dots span {
-    width: 4px; height: 4px; border-radius: 50%;
-    background: var(--teal); opacity: 0.3;
-  }
-  .sc-tag {
-    display: inline-block; background: var(--white);
-    border-radius: 12px; padding: 4px 13px;
-    font-size: 11px; font-weight: 600; color: var(--dark);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    margin-left: 10px;
-  }
-
-  /* Chain: 4 nodes × 52 + 3 connectors × 32 = 304px
-     Starts 170, ends ~474.
-     Callout at 498, ~75px tall → 573.
-     Key at 590. Bottom bar at 788. Logo at 68px from bottom = 772. ✓ */
-
-  .slide-callout {
-    position: absolute;
-    top: 498px; left: 64px; width: 420px;
-    background: var(--white); border-radius: 14px;
-    padding: 16px 20px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-    border-left: 4px solid var(--teal);
-  }
-  .slide-callout p {
-    font-size: 12.5px; color: var(--dark); line-height: 1.55;
-  }
-  .slide-callout p em { color: var(--teal); font-style: normal; font-weight: 600; }
-
-  .slide-key {
-    position: absolute;
-    top: 600px; left: 64px; width: 420px;
-    display: flex; gap: 18px; align-items: center;
-  }
-  .sk-item {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 11px; color: var(--gray);
-  }
-  .sk-dot {
-    width: 11px; height: 11px; border-radius: 50%;
-  }
-  .sk-dot.you-k { background: var(--teal); }
-  .sk-dot.known-k { background: var(--teal-light); border: 1.5px solid var(--teal); }
-
-  /* RIGHT COLUMN: pillars — starts at same vertical line as chain */
-  .slide-pillars {
-    position: absolute; top: 170px; left: 524px; width: 520px;
-    display: flex; flex-direction: column; gap: 16px;
-  }
-  .sp {
-    background: var(--white); border-radius: 14px;
-    padding: 18px 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-    display: flex; align-items: flex-start; gap: 14px;
-  }
-  .sp-icon {
-    width: 40px; height: 40px; border-radius: 50%;
-    background: var(--teal-light);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; font-size: 17px;
-  }
-  .sp-text h3 { font-weight: 700; font-size: 15px; color: var(--dark); margin-bottom: 3px; }
-  .sp-text p { font-size: 12.5px; color: var(--gray); line-height: 1.5; }
-
-  /* Bottom bar */
-  .slide .bottom-bar {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    height: 52px; background: var(--teal);
-    display: flex; align-items: center; justify-content: center;
-    padding: 0 60px;
-  }
-  .slide .bottom-bar p { font-size: 14.5px; color: var(--white); text-align: center; }
-
-  /* ========== ANIMATIONS ========== */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; }
+  ::-webkit-scrollbar { width: 0; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .chain-body .chain-node-row,
-  .chain-body .chain-connector {
-    animation: fadeUp 0.35s ease-out both;
+  @keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
-  .chain-body > *:nth-child(1) { animation-delay: 0.08s; }
-  .chain-body > *:nth-child(2) { animation-delay: 0.16s; }
-  .chain-body > *:nth-child(3) { animation-delay: 0.24s; }
-  .chain-body > *:nth-child(4) { animation-delay: 0.32s; }
-  .chain-body > *:nth-child(5) { animation-delay: 0.40s; }
-  .chain-body > *:nth-child(6) { animation-delay: 0.48s; }
-  .chain-body > *:nth-child(7) { animation-delay: 0.56s; }
-  .chain-body > *:nth-child(8) { animation-delay: 0.64s; }
-  .chain-body > *:nth-child(9) { animation-delay: 0.72s; }
 </style>
 </head>
 <body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
 
-<div class="view-switcher">
-  <button class="view-btn active" onclick="showSection('mockup', this)">App Mockup Flow</button>
-  <button class="view-btn" onclick="showSection('slide', this)">Deck Slide</button>
-</div>
+const C = {
+  bg: "#E8F4F8", bgWarm: "#F2E0D0", teal: "#1A7A7A", tealLight: "#D4EEF0",
+  accent: "#F5C35C", dark: "#1A1A1A", gray: "#888888", grayLight: "#F5F5F5",
+  white: "#FFFFFF", green: "#4CAF50",
+};
 
-<!-- ===================== SCREEN 1: FEED → TAP PARENT NAME ===================== -->
-<div id="mockup" class="section active">
-  <div class="phone-wrap">
+const categories = ["Help 👶", "Activities", "Birthday", "Health", "Education", "Swears by", "Marketplace"];
 
-    <!-- Phone 1: Home feed with a recommendation post -->
-    <div class="phone">
-      <div class="phone-notch"></div>
-      <div class="phone-content">
-        <div class="feed-top"></div>
-        <div class="feed-header">
-          <h1>Home</h1>
-          <div class="feed-header-icon">🔔</div>
+const posts = [
+  { id: 1, author: "Clara M.", degree: "1st", time: "2 days ago", tag: "Nanny",
+    title: "Recommending: Sofia — PT nanny, Montessori trained",
+    body: "Sofia came recommended through my neighbour Anna. She's Montessori trained, incredibly warm, and my 2yo adores her. Available Tues-Thurs.", likes: 4 },
+  { id: 2, author: "James R.", degree: "2nd", time: "5 days ago", tag: "Activities",
+    title: "Woodland Adventures — half-term camp in Richmond",
+    body: "Just booked my 4yo for the February camp. Small groups, forest school approach, very hands-on. They still have a few spots.", likes: 7 },
+  { id: 3, author: "Priya S.", degree: "1st", time: "1 week ago", tag: "Health",
+    title: "Dr. Chen — paediatric allergist in Kensington",
+    body: "After months of waiting lists, found Dr. Chen through Circles. Thorough, kind, explained everything clearly. Highly recommend.", likes: 11 },
+];
+
+const trustedPartners = [
+  { name: "Sofia K.", role: "Nanny · Montessori", rating: "4.9", recs: 6, exp: "4+ years experience. DBS checked. Available Mon-Wed-Fri. Specialises in toddlers 1-3yo. Montessori approach." },
+  { name: "Emma T.", role: "Babysitter · First Aid", rating: "4.8", recs: 4, exp: "3 years experience. Paediatric First Aid certified. Available evenings and weekends. Great with newborns." },
+  { name: "Amara J.", role: "Tutor · Maths KS2", rating: "5.0", recs: 3, exp: "Qualified teacher. 6 years tutoring experience. KS1-KS2 Maths and English. Available after school hours." },
+];
+
+const agentMessages = [
+  { type: "user", text: "Hey Circles, what should I plan for the week-end?", time: "18:53" },
+  { type: "agent", text: "Hi Ella! Looks like it'll be raining in London this weekend. Here are some ideas from your community:", time: "18:53", delay: 800 },
+  { type: "agent", text: "🎬 Clara's family loved the dinosaur film at the Lightroom last week. Showing Sat & Sun, 11am and 2pm.", time: "18:53", delay: 1800, source: "Clara M. — 1st connection" },
+  { type: "agent", text: "🍽️ Afterwards, you could try Lina Stores in King's Cross — Priya says it's great with kids and they have a kids menu.", time: "18:54", delay: 2800, source: "Priya S. — 1st connection" },
+  { type: "agent", text: "Shall I check availability and book?", time: "18:54", delay: 3600 },
+  { type: "user", text: "Yes please! Sounds great", time: "18:54", delay: 4800 },
+  { type: "agent", text: "Done! Lightroom tickets booked for Saturday 2pm (2 adults + 1 child). Lina Stores — I've added it to your calendar for 12:30 so you can have lunch first. The film is 50 min, you can head straight home after. Enjoy your weekend! 🎉", time: "18:55", delay: 5800, source: "Booked via Circles" },
+];
+
+function PhoneFrame({ children }) {
+  return (
+    <div style={{ width: 375, height: 780, borderRadius: 40, background: C.dark, padding: 8,
+      boxShadow: "0 25px 60px rgba(0,0,0,0.3)", position: "relative" }}>
+      <div style={{ width: "100%", height: "100%", borderRadius: 34, background: C.bg,
+        overflow: "hidden", position: "relative", display: "flex", flexDirection: "column" }}>
+        <div style={{ height: 48, display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "0 24px", fontSize: 12, fontWeight: 600, color: C.dark, flexShrink: 0 }}>
+          <span>10:01</span>
+          <div style={{ width: 120, height: 28, background: C.dark, borderRadius: 14,
+            position: "absolute", left: "50%", transform: "translateX(-50%)", top: 10 }} />
+          <span style={{ fontSize: 11 }}>●●● ▌▌</span>
         </div>
-
-        <div class="feed-pills">
-          <div class="feed-pill active">All</div>
-          <div class="feed-pill">Childcare</div>
-          <div class="feed-pill">Activities</div>
-          <div class="feed-pill">Health</div>
-          <div class="feed-pill">Education</div>
-        </div>
-
-        <!-- Post 1: A parent recommending something -->
-        <div class="post-card">
-          <div class="post-author">
-            <div class="post-avatar parent-av">EM</div>
-            <div class="post-author-info">
-              <div class="post-name"><span class="mention">Emma L.</span></div>
-              <div class="post-degree"><strong>3rd</strong> connection</div>
-            </div>
-            <div class="post-time">2h</div>
-          </div>
-          <div class="post-body">
-            My kids absolutely loved this holiday camp. They came back exhausted and happy every single day. Booking again for Easter!
-          </div>
-          <div class="post-partner-card">
-            <div class="post-partner-avatar">WA</div>
-            <div class="post-partner-info">
-              <div class="pp-name">Woodland Adventures</div>
-              <div class="pp-role">Holiday Camp</div>
-              <div class="pp-rec">Recommended by <strong>Emma L.</strong> and 4 others</div>
-            </div>
-          </div>
-          <div class="post-actions">
-            <div class="post-action">♡ 12</div>
-            <div class="post-action">💬 3</div>
-            <div class="post-action">↗ Share</div>
-          </div>
-        </div>
-
-        <!-- Tappable connection chain hint -->
-        <div class="connection-hint">
-          <div class="connection-hint-chain">
-            <div class="ch-mini you-m" style="font-size:8px;">You</div>
-            <div class="ch-mini p1">CM</div>
-            <div class="ch-mini p2">SK</div>
-            <div class="ch-mini target">EL</div>
-          </div>
-          <div class="connection-hint-text">See how you know Emma L.</div>
-          <div class="connection-hint-arrow">›</div>
-        </div>
-
-        <!-- Post 2: simpler post for context -->
-        <div class="post-card">
-          <div class="post-author">
-            <div class="post-avatar parent-av">CM</div>
-            <div class="post-author-info">
-              <div class="post-name">Clara M.</div>
-              <div class="post-degree"><strong>1st</strong> connection</div>
-            </div>
-            <div class="post-time">5h</div>
-          </div>
-          <div class="post-body">
-            Has anyone found a good French tutor in South Ken? My daughter is starting bilingual school in September and we want to prepare her over summer.
-          </div>
-          <div class="post-actions">
-            <div class="post-action">♡ 8</div>
-            <div class="post-action">💬 6</div>
-            <div class="post-action">↗ Share</div>
-          </div>
-        </div>
-
-      </div>
-      <div class="phone-bar"></div>
-    </div>
-
-    <!-- Arrow -->
-    <div class="phone-arrow">→</div>
-
-    <!-- Phone 2: Connection chain (after tapping "See how you know Emma") -->
-    <div class="phone">
-      <div class="phone-notch"></div>
-      <div class="chain-screen">
-
-        <div class="chain-header">
-          <div class="chain-back">←</div>
-          <div class="chain-title">Your connection</div>
-        </div>
-
-        <!-- Target: Emma -->
-        <div class="chain-target-banner">
-          <div class="ctb-avatar">EL</div>
-          <div class="ctb-info">
-            <div class="ctb-name">Emma L.</div>
-            <div class="ctb-meta">3 connections away from you</div>
-          </div>
-          <div class="ctb-degree-badge">3rd</div>
-        </div>
-
-        <!-- The chain -->
-        <div class="chain-body">
-
-          <!-- You -->
-          <div class="chain-node-row">
-            <div class="cn-avatar you-av">You</div>
-            <div class="cn-info">
-              <div class="cn-name">You</div>
-              <div class="cn-meta">Your network</div>
-            </div>
-          </div>
-
-          <!-- Connector: You → Clara -->
-          <div class="chain-connector">
-            <div class="cc-line">
-              <div class="cc-dot"></div><div class="cc-dot"></div><div class="cc-dot"></div>
-            </div>
-          </div>
-
-          <!-- Clara M. — 1st degree, FULL identity -->
-          <div class="chain-node-row">
-            <div class="cn-avatar known">CM</div>
-            <div class="cn-info">
-              <div class="cn-name">Clara M.</div>
-              <div class="cn-meta"><strong>1st</strong> connection · 32 sponsors</div>
-            </div>
-            <div class="cn-degree">1st</div>
-          </div>
-
-          <!-- Connector: Clara → Sophie K. -->
-          <div class="chain-connector">
-            <div class="cc-line">
-              <div class="cc-dot"></div><div class="cc-dot"></div><div class="cc-dot"></div>
-            </div>
-          </div>
-
-          <!-- Sophie K. — 2nd degree -->
-          <div class="chain-node-row">
-            <div class="cn-avatar known">SK</div>
-            <div class="cn-info">
-              <div class="cn-name">Sophie K.</div>
-              <div class="cn-meta"><strong>2nd</strong> connection</div>
-            </div>
-            <div class="cn-degree">2nd</div>
-          </div>
-
-          <!-- Connector: Sophie K. → Emma -->
-          <div class="chain-connector">
-            <div class="cc-line">
-              <div class="cc-dot"></div><div class="cc-dot"></div><div class="cc-dot"></div>
-            </div>
-          </div>
-
-          <!-- Emma L. — 3rd degree -->
-          <div class="chain-node-row">
-            <div class="cn-avatar known">EL</div>
-            <div class="cn-info">
-              <div class="cn-name">Emma L.</div>
-              <div class="cn-meta"><strong>3rd</strong> connection</div>
-            </div>
-            <div class="cn-degree">3rd</div>
-          </div>
-
-        </div>
-
-        <!-- Footer -->
-        <div class="chain-footer">
-          <div class="chain-footer-note">
-            Your friend <em>Clara M.</em> is connected to Emma through one parent. That's how trust travels.
-          </div>
-          <button class="chain-cta">Back to post</button>
-        </div>
-
-      </div>
-      <div class="phone-bar"></div>
-    </div>
-
-    <!-- Notes -->
-    <div class="mockup-notes">
-      <h2>Discover the link</h2>
-      <p>When a parent sees a post from someone they don't know directly, they can tap to see exactly how they're connected through the network.</p>
-
-      <div class="mn-label">Privacy logic</div>
-      <p>Only your 1st-degree connection (your actual friend) shows their full name. Everyone else in the chain shows initials only. Your friend is the trust anchor.</p>
-
-      <div class="mn-label">Trigger points</div>
-      <p>"Emma recommended this activity", "Emma loved this holiday camp", any post or recommendation from a parent beyond 1st degree. Tap the name or the chain hint to reveal the path.</p>
-
-      <div class="mn-label">Network scope</div>
-      <p>The chain is parent-to-parent only. Trusted Partners are recommended by parents but don't have connections themselves. The chain shows how you're linked to the recommending parent.</p>
-
-      <div class="mn-highlight">
-        <strong>The trust signal:</strong> "I don't know Emma, but my friend Clara does, and that's enough."
+        {children}
       </div>
     </div>
+  );
+}
 
-  </div>
-</div>
+function TabBar({ active, onNavigate }) {
+  const tabs = [
+    { id: "home", icon: "🏠", label: "Home" },
+    { id: "partners", icon: "👥", label: "Partners" },
+    { id: "post", icon: "➕", label: "Post" },
+    { id: "chat", icon: "💬", label: "Agent" },
+    { id: "network", icon: "🔗", label: "Network" },
+  ];
+  return (
+    <div style={{ height: 72, display: "flex", alignItems: "center", justifyContent: "space-around",
+      background: C.white, borderTop: "1px solid #E8E8E8", flexShrink: 0, paddingBottom: 8 }}>
+      {tabs.map(t => (
+        <button key={t.id} onClick={() => onNavigate(t.id)}
+          style={{ background: "none", border: "none", cursor: "pointer", display: "flex",
+            flexDirection: "column", alignItems: "center", gap: 2,
+            opacity: active === t.id ? 1 : 0.45, transition: "opacity 0.2s" }}>
+          <span style={{ fontSize: 20 }}>{t.icon}</span>
+          <span style={{ fontSize: 10, fontWeight: active === t.id ? 700 : 500,
+            color: active === t.id ? C.teal : C.gray }}>{t.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
 
-<!-- ===================== DECK SLIDE ===================== -->
-<div id="slide" class="section">
-  <div class="slide-wrap">
-    <div class="slide-label">PROPOSED DECK SLIDE — 16:9 (1456 × 840)</div>
-    <div class="slide">
+function HomeScreen() {
+  const [sharePost, setSharePost] = useState(null);
+  const [showLanding, setShowLanding] = useState(false);
+  const [landingPost, setLandingPost] = useState(null);
+  const [showSignUp, setShowSignUp] = useState(false);
+  const [sponsorCode, setSponsorCode] = useState("");
+  const [signUpStep, setSignUpStep] = useState(0);
 
-      <!-- Title -->
-      <div class="title-area">
-        <h1>Every recommendation comes from<br>someone you know.</h1>
-        <div class="title-divider"></div>
+  return (
+    <div style={{ flex: 1, overflow: "auto", padding: "0 16px", position: "relative" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0 12px" }}>
+        <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 800, fontSize: 22, color: C.dark }}>Circles</span>
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <button style={{ background: C.tealLight, border: "none", borderRadius: 20, padding: "6px 14px",
+            fontSize: 12, fontWeight: 600, color: C.teal, cursor: "pointer" }}>Invite a friend</button>
+          <span style={{ fontSize: 18, cursor: "pointer" }}>🔔</span>
+        </div>
       </div>
-
-      <!-- Connection chain — left side, matches app mockup -->
-      <div class="slide-chain">
-
-        <!-- You -->
-        <div class="sc-node">
-          <div class="sc-av you">You</div>
-          <div class="sc-info">
-            <div class="sc-name">You</div>
-            <div class="sc-meta">Your network</div>
-          </div>
-        </div>
-
-        <div class="sc-conn">
-          <div class="sc-dots"><span></span><span></span><span></span></div>
-        </div>
-
-        <!-- Clara — 1st -->
-        <div class="sc-node">
-          <div class="sc-av known">CM</div>
-          <div class="sc-info">
-            <div class="sc-name">Clara M.</div>
-            <div class="sc-meta">1st connection · 32 sponsors</div>
-          </div>
-          <div class="sc-deg">1st</div>
-        </div>
-
-        <div class="sc-conn">
-          <div class="sc-dots"><span></span><span></span><span></span></div>
-        </div>
-
-        <!-- Sophie — 2nd -->
-        <div class="sc-node">
-          <div class="sc-av known">SK</div>
-          <div class="sc-info">
-            <div class="sc-name">Sophie K.</div>
-            <div class="sc-meta">2nd connection</div>
-          </div>
-          <div class="sc-deg">2nd</div>
-        </div>
-
-        <div class="sc-conn">
-          <div class="sc-dots"><span></span><span></span><span></span></div>
-        </div>
-
-        <!-- Emma — 3rd -->
-        <div class="sc-node">
-          <div class="sc-av known">EL</div>
-          <div class="sc-info">
-            <div class="sc-name">Emma L.</div>
-            <div class="sc-meta">3rd connection</div>
-          </div>
-          <div class="sc-deg">3rd</div>
-        </div>
-
+      <div style={{ background: C.white, borderRadius: 12, padding: "10px 14px", display: "flex",
+        alignItems: "center", gap: 8, marginBottom: 12, border: "1px solid #E0E0E0" }}>
+        <span style={{ color: C.gray, fontSize: 14 }}>🔍</span>
+        <span style={{ color: "#BBB", fontSize: 13 }}>Search recommendations...</span>
       </div>
+      <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 12, marginBottom: 4 }}>
+        {categories.map((cat, i) => (
+          <span key={cat} style={{ background: i === 0 ? C.teal : C.white, color: i === 0 ? C.white : C.dark,
+            borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 500, whiteSpace: "nowrap",
+            border: i === 0 ? "none" : "1px solid #DDD" }}>{cat}</span>
+        ))}
+      </div>
+      {posts.map(p => (
+        <div key={p.id} style={{ background: C.white, borderRadius: 14, padding: 16, marginBottom: 12,
+          boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: C.tealLight,
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14,
+              fontWeight: 700, color: C.teal }}>
+              {p.author.split(" ").map(n => n[0]).join("")}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontWeight: 700, fontSize: 13, color: C.dark }}>{p.author}</span>
+                <span style={{ background: C.tealLight, color: C.teal, fontSize: 10, fontWeight: 600,
+                  padding: "2px 6px", borderRadius: 8 }}>{p.degree}</span>
+              </div>
+              <span style={{ fontSize: 11, color: C.gray }}>{p.time}</span>
+            </div>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: C.teal, marginBottom: 6 }}>{p.title}</div>
+          <div style={{ fontSize: 12.5, color: "#555", lineHeight: 1.5, marginBottom: 10 }}>{p.body}</div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ background: C.grayLight, padding: "3px 10px", borderRadius: 10, fontSize: 11,
+              color: C.dark, fontWeight: 500 }}>{p.tag}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <span style={{ fontSize: 12, color: C.gray }}>♡ {p.likes}</span>
+              <span style={{ fontSize: 12, color: C.gray, cursor: "pointer" }}
+                onClick={() => setSharePost(p)}>↗ Share</span>
+            </div>
+          </div>
+        </div>
+      ))}
+      <div style={{ height: 16 }} />
 
-      <!-- Callout -->
-      <div class="slide-callout">
-        <p>
-          You don't know Emma. But your friend Clara does, through one parent in the network.
-          <em>Your friend is the trust anchor. That's how every recommendation travels.</em>
+      {/* Share Sheet Modal */}
+      {sharePost && !showLanding && (
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "flex-end",
+          justifyContent: "center", zIndex: 10, padding: "0 0 0", animation: "fadeInModal 0.25s ease-out" }}>
+          <div style={{ background: C.white, borderRadius: "20px 20px 0 0", padding: "20px 16px 16px",
+            width: "100%", boxShadow: "0 -8px 30px rgba(0,0,0,0.15)" }}>
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <span style={{ fontWeight: 700, fontSize: 15, color: C.dark }}>Share this recommendation</span>
+              <button onClick={() => setSharePost(null)}
+                style={{ background: "none", border: "none", fontSize: 18, color: C.gray, cursor: "pointer" }}>✕</button>
+            </div>
+
+            {/* Post preview */}
+            <div style={{ background: C.grayLight, borderRadius: 12, padding: 12, marginBottom: 16 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: C.teal, marginBottom: 4 }}>{sharePost.title}</div>
+              <div style={{ fontSize: 11, color: "#555", lineHeight: 1.4 }}>
+                {sharePost.body.substring(0, 80)}...
+              </div>
+              <div style={{ fontSize: 10, color: C.gray, marginTop: 6 }}>
+                by {sharePost.author} on Circles
+              </div>
+            </div>
+
+            {/* Share options */}
+            <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 16 }}>
+              {[
+                { name: "WhatsApp", icon: "💬", color: "#25D366" },
+                { name: "iMessage", icon: "✉️", color: "#007AFF" },
+                { name: "Copy link", icon: "🔗", color: C.teal },
+              ].map(opt => (
+                <div key={opt.name} onClick={() => { setLandingPost(sharePost); setShowLanding(true); }}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: opt.color + "18",
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>
+                    {opt.icon}
+                  </div>
+                  <span style={{ fontSize: 10, color: C.dark, fontWeight: 500 }}>{opt.name}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Note */}
+            <div style={{ background: C.tealLight, borderRadius: 10, padding: "8px 12px",
+              fontSize: 10, color: C.teal, textAlign: "center", lineHeight: 1.4 }}>
+              Non-members will see this post and can sign up with their own sponsor code.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* WhatsApp Preview → Landing Page simulation */}
+      {showLanding && landingPost && (
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center",
+          justifyContent: "center", zIndex: 20, padding: 12, animation: "fadeInModal 0.25s ease-out" }}>
+          <div style={{ background: C.white, borderRadius: 20, width: "100%", maxWidth: 340,
+            overflow: "hidden", boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}>
+
+            {/* WhatsApp-style message preview */}
+            <div style={{ background: "#DCF8C6", padding: "12px 14px", borderRadius: "12px 12px 0 0" }}>
+              <div style={{ fontSize: 11, color: "#555", marginBottom: 6 }}>
+                <span style={{ fontWeight: 700 }}>You</span> shared via WhatsApp:
+              </div>
+              <div style={{ background: C.white, borderRadius: 10, overflow: "hidden",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}>
+                <div style={{ background: C.bg, padding: "10px 12px", borderBottom: "1px solid #E0E0E0" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: "50%", background: C.teal,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 8, color: C.white, fontWeight: 700 }}>C</div>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: C.teal }}>circles-app.com</span>
+                  </div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: C.dark }}>{landingPost.title}</div>
+                  <div style={{ fontSize: 10, color: C.gray, marginTop: 2 }}>
+                    Recommended by {landingPost.author} on Circles
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Simulated landing page */}
+            <div style={{ padding: "16px 16px 10px", background: C.bg }}>
+              <div style={{ textAlign: "center", marginBottom: 8 }}>
+                <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 800,
+                  fontSize: 18, color: C.dark }}>Circles</span>
+              </div>
+
+              {/* Post content - visible */}
+              <div style={{ background: C.white, borderRadius: 14, padding: 14, marginBottom: 12,
+                boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <div style={{ width: 30, height: 30, borderRadius: "50%", background: C.tealLight,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 11, fontWeight: 700, color: C.teal }}>
+                    {landingPost.author.split(" ").map(n => n[0]).join("")}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 12, color: C.dark }}>{landingPost.author}</div>
+                    <div style={{ fontSize: 10, color: C.gray }}>{landingPost.time}</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: C.teal, marginBottom: 4 }}>{landingPost.title}</div>
+                <div style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>{landingPost.body}</div>
+              </div>
+
+              {/* Blurred content teaser */}
+              <div style={{ background: C.white, borderRadius: 14, padding: 14, marginBottom: 12,
+                filter: "blur(3px)", opacity: 0.5 }}>
+                <div style={{ height: 10, background: "#E0E0E0", borderRadius: 4, width: "80%", marginBottom: 8 }} />
+                <div style={{ height: 10, background: "#E0E0E0", borderRadius: 4, width: "60%", marginBottom: 8 }} />
+                <div style={{ height: 10, background: "#E0E0E0", borderRadius: 4, width: "70%" }} />
+              </div>
+
+              {/* CTA */}
+              <div style={{ textAlign: "center", marginBottom: 8 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: C.dark, marginBottom: 4 }}>
+                  Want to see more?
+                </div>
+                <div style={{ fontSize: 11, color: C.gray, marginBottom: 12, lineHeight: 1.4 }}>
+                  Circles is an invite-only community. Join with a sponsor code from a member, or log in if you already have an account.
+                </div>
+
+                <button onClick={() => setShowSignUp(true)}
+                  style={{ width: "100%", background: C.teal, color: C.white, border: "none",
+                  borderRadius: 14, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                  marginBottom: 8 }}>
+                  Join Circles
+                </button>
+
+                <button onClick={() => { setShowLanding(false); setSharePost(null); }}
+                  style={{ width: "100%", background: C.white, color: C.teal, border: "2px solid " + C.teal,
+                  borderRadius: 14, padding: "10px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                  I already have an account
+                </button>
+              </div>
+
+              <div style={{ textAlign: "center", fontSize: 9, color: C.gray, marginTop: 8, lineHeight: 1.4 }}>
+                Circles is invite-only. Every member is sponsored by someone they know.
+              </div>
+            </div>
+
+            {/* Close */}
+            <div onClick={() => { setShowLanding(false); setSharePost(null); setShowSignUp(false); setSignUpStep(0); }}
+              style={{ textAlign: "center", padding: "10px", background: C.grayLight,
+                fontSize: 12, color: C.gray, cursor: "pointer" }}>
+              Close preview
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sign-Up Flow Modal */}
+      {showSignUp && (
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center",
+          justifyContent: "center", zIndex: 30, padding: 12, animation: "fadeInModal 0.25s ease-out" }}>
+          <div style={{ background: C.white, borderRadius: 20, width: "100%", maxWidth: 320,
+            padding: "24px 20px", boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}>
+
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 800,
+                fontSize: 18, color: C.dark }}>Join Circles</span>
+              <button onClick={() => { setShowSignUp(false); setSignUpStep(0); setSponsorCode(""); }}
+                style={{ background: "none", border: "none", fontSize: 18, color: C.gray, cursor: "pointer" }}>✕</button>
+            </div>
+
+            {/* Progress */}
+            <div style={{ display: "flex", gap: 4, marginBottom: 20 }}>
+              {[0, 1, 2].map(i => (
+                <div key={i} style={{ flex: 1, height: 3, borderRadius: 2,
+                  background: i <= signUpStep ? C.teal : "#E0E0E0", transition: "background 0.3s" }} />
+              ))}
+            </div>
+
+            {/* Step 0: Sponsor code */}
+            {signUpStep === 0 && (
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: C.dark, marginBottom: 6 }}>
+                  Enter your sponsor code
+                </div>
+                <div style={{ fontSize: 11, color: C.gray, marginBottom: 14, lineHeight: 1.4 }}>
+                  Circles is invite-only. Every new member needs a sponsor code from an existing member. Ask a friend who's already on Circles!
+                </div>
+                <div style={{ position: "relative", marginBottom: 12 }}>
+                  <input type="text" placeholder="e.g. CLARA-2025"
+                    value={sponsorCode}
+                    onChange={(e) => setSponsorCode(e.target.value)}
+                    style={{ width: "100%", padding: "12px 14px", borderRadius: 12,
+                      border: "2px solid " + (sponsorCode.length > 3 ? C.teal : "#E0E0E0"),
+                      fontSize: 14, fontFamily: "'DM Sans'", outline: "none",
+                      transition: "border 0.2s", boxSizing: "border-box" }} />
+                  {sponsorCode.length > 3 && (
+                    <span style={{ position: "absolute", right: 12, top: 12, color: C.teal, fontSize: 16 }}>✓</span>
+                  )}
+                </div>
+                <div style={{ background: C.tealLight, borderRadius: 10, padding: "8px 12px",
+                  fontSize: 10, color: C.teal, lineHeight: 1.4, marginBottom: 16 }}>
+                  💡 Don't have a code? Ask the person who shared this post, or visit hellocircles.com to learn more.
+                </div>
+                <button onClick={() => { if (sponsorCode.length > 3) setSignUpStep(1); }}
+                  style={{ width: "100%", background: sponsorCode.length > 3 ? C.teal : "#CCC",
+                    color: C.white, border: "none", borderRadius: 14, padding: "12px",
+                    fontSize: 14, fontWeight: 700, cursor: sponsorCode.length > 3 ? "pointer" : "default" }}>
+                  Verify code
+                </button>
+              </div>
+            )}
+
+            {/* Step 1: Sponsor confirmed + your details */}
+            {signUpStep === 1 && (
+              <div>
+                <div style={{ background: "#E8F5E9", borderRadius: 12, padding: 12, marginBottom: 16,
+                  display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 20 }}>✅</span>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: "#2E7D32" }}>Sponsor verified!</div>
+                    <div style={{ fontSize: 10, color: "#555" }}>Sponsored by Clara M.</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: C.dark, marginBottom: 12 }}>
+                  Tell us about you
+                </div>
+                {["First name", "Email address", "Neighbourhood (e.g. Notting Hill)"].map((ph, i) => (
+                  <input key={ph} type="text" placeholder={ph}
+                    style={{ width: "100%", padding: "10px 14px", borderRadius: 12,
+                      border: "1px solid #E0E0E0", fontSize: 13, fontFamily: "'DM Sans'",
+                      marginBottom: 8, outline: "none", boxSizing: "border-box" }} />
+                ))}
+                <button onClick={() => setSignUpStep(2)}
+                  style={{ width: "100%", background: C.teal, color: C.white, border: "none",
+                    borderRadius: 14, padding: "12px", fontSize: 14, fontWeight: 700,
+                    cursor: "pointer", marginTop: 8 }}>
+                  Continue
+                </button>
+              </div>
+            )}
+
+            {/* Step 2: Welcome */}
+            {signUpStep === 2 && (
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>🎉</div>
+                <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 20,
+                  fontWeight: 800, color: C.dark, marginBottom: 8 }}>
+                  Welcome to Circles!
+                </div>
+                <div style={{ fontSize: 12, color: C.gray, lineHeight: 1.5, marginBottom: 16 }}>
+                  You're now part of a trusted community of parents.
+                  Your sponsor Clara M. has vouched for you.
+                </div>
+                <div style={{ background: C.tealLight, borderRadius: 12, padding: 12, marginBottom: 16 }}>
+                  <div style={{ fontSize: 11, color: C.teal, fontWeight: 600, marginBottom: 4 }}>What's next?</div>
+                  <div style={{ fontSize: 10, color: C.dark, lineHeight: 1.5 }}>
+                    Browse recommendations from parents in your area. Share your own. Connect with Trusted Partners via Circles+.
+                  </div>
+                </div>
+                <button onClick={() => { setShowSignUp(false); setShowLanding(false); setSharePost(null); setSignUpStep(0); setSponsorCode(""); }}
+                  style={{ width: "100%", background: C.teal, color: C.white, border: "none",
+                    borderRadius: 14, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+                  Start exploring
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PartnersScreen() {
+  const [selectedPartner, setSelectedPartner] = useState(null);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [quizStep, setQuizStep] = useState(0);
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [showAgentBubble, setShowAgentBubble] = useState(false);
+  const [agentStep, setAgentStep] = useState(0);
+  const [dismissed, setDismissed] = useState(false);
+
+  const quizQuestions = [
+    { q: "What are you looking for?", options: ["Nanny", "Babysitter", "Tutor", "Childminder"], key: "type", icons: ["👶", "🌙", "📚", "🏠"] },
+    { q: "How old is your child?", options: ["0-1 year", "1-3 years", "3-5 years", "5+ years"], key: "age", icons: ["🍼", "🧸", "🎨", "🎒"] },
+    { q: "Which days do you need?", options: ["Weekdays", "Weekends", "Flexible", "One-off"], key: "days", icons: ["📅", "☀️", "🔄", "📌"] },
+  ];
+
+  const handleCloseUpgrade = (e) => {
+    e.stopPropagation();
+    setShowUpgrade(false);
+    if (!dismissed) {
+      setTimeout(() => setShowQuiz(true), 400);
+    }
+  };
+
+  const handleQuizAnswer = (key, val) => {
+    const newAnswers = { ...quizAnswers, [key]: val };
+    setQuizAnswers(newAnswers);
+    if (quizStep < quizQuestions.length - 1) {
+      setTimeout(() => setQuizStep(quizStep + 1), 300);
+    } else {
+      setTimeout(() => {
+        setShowQuiz(false);
+        setShowAgentBubble(true);
+        setAgentStep(0);
+        setTimeout(() => setAgentStep(1), 1200);
+        setTimeout(() => setAgentStep(2), 3000);
+      }, 500);
+    }
+  };
+
+  const handleDismissAll = () => {
+    setShowQuiz(false);
+    setShowAgentBubble(false);
+    setDismissed(true);
+  };
+
+  const partnerMatch = selectedPartner || trustedPartners[0];
+  const agentConvo = [
+    { text: "Based on what you told me, I found 3 matches in your trusted network! ✨", time: "Now" },
+    { text: partnerMatch.name + " would be a great fit. She's recommended by Clara in your network and available on the days you need.", time: "Now", source: "Clara M. — 1st connection" },
+    { text: "Want me to set up an introduction?", time: "Now", cta: true },
+  ];
+
+  return (
+    <div style={{ flex: 1, overflow: "auto", padding: "0 16px", position: "relative" }}>
+      <div style={{ padding: "8px 0 16px" }}>
+        <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 800, fontSize: 20, color: C.dark }}>Trusted Partners</span>
+        <p style={{ fontSize: 12.5, color: C.gray, marginTop: 4, lineHeight: 1.4 }}>
+          Vetted professionals recommended by parents in your network.
         </p>
       </div>
+      {trustedPartners.map((tp, i) => (
+        <div key={i} onClick={() => { setSelectedPartner(tp); setShowUpgrade(true); setShowQuiz(false); setShowAgentBubble(false); setDismissed(false); setQuizStep(0); setQuizAnswers({}); setAgentStep(0); }}
+          style={{ background: C.white, borderRadius: 14, padding: 16, marginBottom: 12,
+            boxShadow: "0 1px 4px rgba(0,0,0,0.06)", display: "flex", alignItems: "center",
+            gap: 14, cursor: "pointer", transition: "transform 0.15s" }}>
+          <div style={{ width: 48, height: 48, borderRadius: "50%",
+            background: "linear-gradient(135deg, " + C.tealLight + ", " + C.bgWarm + ")",
+            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16,
+            fontWeight: 700, color: C.teal, flexShrink: 0 }}>
+            {tp.name.split(" ").map(n => n[0]).join("")}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 14, color: C.dark }}>{tp.name}</div>
+            <div style={{ fontSize: 12, color: C.gray, marginTop: 2 }}>{tp.role}</div>
+            <div style={{ display: "flex", gap: 12, marginTop: 6 }}>
+              <span style={{ fontSize: 11, color: C.teal, fontWeight: 600 }}>⭐ {tp.rating}</span>
+              <span style={{ fontSize: 11, color: C.gray }}>{tp.recs} recommendations</span>
+            </div>
+          </div>
+          <div style={{ background: C.teal, color: C.white, borderRadius: 10, padding: "8px 14px",
+            fontSize: 11, fontWeight: 600 }}>View</div>
+        </div>
+      ))}
 
-      <!-- Visual key -->
-      <div class="slide-key">
-        <div class="sk-item">
-          <div class="sk-dot you-k"></div> You
-        </div>
-        <div class="sk-item">
-          <div class="sk-dot known-k"></div> 1st connection (your friend)
-        </div>
-        <div class="sk-item">
-          <div class="sk-dot known-k"></div> 2nd and 3rd connections (real names, full transparency)
-        </div>
-      </div>
-
-      <!-- Pillars — right -->
-      <div class="slide-pillars">
-        <div class="sp">
-          <div class="sp-icon">✓</div>
-          <div class="sp-text">
-            <h3>Sponsored membership</h3>
-            <p>Every parent is vouched for by someone they know. No anonymous users. Accountability is built in.</p>
+      {/* Circles+ Upgrade Modal */}
+      {showUpgrade && selectedPartner && (
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center",
+          justifyContent: "center", zIndex: 10, padding: 20, animation: "fadeInModal 0.25s ease-out" }}>
+          <div style={{ background: C.white, borderRadius: 20, padding: "24px 20px",
+            width: "100%", maxWidth: 320, boxShadow: "0 20px 40px rgba(0,0,0,0.15)" }}>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button onClick={handleCloseUpgrade}
+                style={{ background: "none", border: "none", fontSize: 18, color: C.gray, cursor: "pointer", padding: 0 }}>✕</button>
+            </div>
+            <div style={{ background: C.grayLight, borderRadius: 14, padding: 16, marginBottom: 16,
+              position: "relative", overflow: "hidden" }}>
+              <div style={{ filter: "blur(4px)", opacity: 0.6 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: "50%", background: C.tealLight,
+                    display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700,
+                    fontSize: 14, color: C.teal }}>
+                    {selectedPartner.name.split(" ").map(n => n[0]).join("")}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>{selectedPartner.name}</div>
+                    <div style={{ fontSize: 12, color: C.gray }}>{selectedPartner.role}</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>{selectedPartner.exp}</div>
+              </div>
+              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+                background: C.white, borderRadius: "50%", width: 44, height: 44, display: "flex",
+                alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                fontSize: 20 }}>🔒</div>
+            </div>
+            <div style={{ textAlign: "center", marginBottom: 16 }}>
+              <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 800, fontSize: 18,
+                color: C.dark, marginBottom: 6 }}>Get Circles+</div>
+              <div style={{ fontSize: 13, color: C.gray, lineHeight: 1.5 }}>
+                Access our Trusted Partner network and connect with vetted professionals recommended by parents you know.
+              </div>
+            </div>
+            <div style={{ marginBottom: 18 }}>
+              {["Connect directly with Trusted Partners", "See who in your network recommends them",
+                "Full profile, availability & reviews", "Priority access to new partners"].map((item, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", fontSize: 12, color: C.dark }}>
+                  <span style={{ width: 20, height: 20, borderRadius: "50%", background: C.tealLight,
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10,
+                    color: C.teal, flexShrink: 0 }}>✓</span>
+                  {item}
+                </div>
+              ))}
+            </div>
+            <button onClick={(e) => { e.stopPropagation(); setShowUpgrade(false); setDismissed(true); setSelectedPartner(null); }}
+              style={{ width: "100%", background: C.teal, color: C.white, border: "none", borderRadius: 14,
+                padding: "14px", fontSize: 15, fontWeight: 700, cursor: "pointer", marginBottom: 8 }}>
+              Upgrade to Circles+
+            </button>
+            <div style={{ textAlign: "center", fontSize: 11, color: C.gray }}>Starting from £55 per introduction</div>
           </div>
         </div>
-        <div class="sp">
-          <div class="sp-icon">✦</div>
-          <div class="sp-text">
-            <h3>Human-verified recommendations</h3>
-            <p>Every Trusted Partner is recommended by real parents. Peer-powered, not algorithm-driven.</p>
+      )}
+
+      {/* Quiz Modal */}
+      {showQuiz && (
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "flex-end",
+          justifyContent: "center", zIndex: 10, padding: "0 12px 12px", animation: "fadeInModal 0.3s ease-out" }}>
+          <div style={{ background: C.white, borderRadius: 24, padding: "24px 20px 20px",
+            width: "100%", maxWidth: 340, boxShadow: "0 20px 40px rgba(0,0,0,0.15)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 32, height: 32, borderRadius: "50%",
+                  background: "linear-gradient(135deg, " + C.teal + ", #2BA5A5)",
+                  display: "flex", alignItems: "center", justifyContent: "center", color: C.white, fontSize: 14 }}>✦</div>
+                <span style={{ fontWeight: 700, fontSize: 14, color: C.dark }}>Circles</span>
+              </div>
+              <button onClick={handleDismissAll}
+                style={{ background: "none", border: "none", fontSize: 16, color: C.gray, cursor: "pointer" }}>✕</button>
+            </div>
+
+            <div style={{ fontSize: 14, color: C.dark, marginBottom: 4, fontWeight: 600 }}>
+              Help us find your perfect match 🎯
+            </div>
+            <div style={{ fontSize: 12, color: C.gray, marginBottom: 16 }}>
+              Quick question {quizStep + 1} of {quizQuestions.length}
+            </div>
+
+            {/* Progress bar */}
+            <div style={{ height: 4, background: C.grayLight, borderRadius: 2, marginBottom: 16 }}>
+              <div style={{ height: "100%", background: C.teal, borderRadius: 2,
+                width: ((quizStep + 1) / quizQuestions.length * 100) + "%",
+                transition: "width 0.3s ease" }} />
+            </div>
+
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.dark, marginBottom: 14 }}>
+              {quizQuestions[quizStep].q}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {quizQuestions[quizStep].options.map((opt, i) => (
+                <button key={opt} onClick={() => handleQuizAnswer(quizQuestions[quizStep].key, opt)}
+                  style={{
+                    background: quizAnswers[quizQuestions[quizStep].key] === opt ? C.tealLight : C.grayLight,
+                    border: quizAnswers[quizQuestions[quizStep].key] === opt ? "2px solid " + C.teal : "2px solid transparent",
+                    borderRadius: 14, padding: "14px 10px", cursor: "pointer",
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+                    transition: "all 0.2s",
+                  }}>
+                  <span style={{ fontSize: 22 }}>{quizQuestions[quizStep].icons[i]}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: C.dark }}>{opt}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-        <div class="sp">
-          <div class="sp-icon">✪</div>
-          <div class="sp-text">
-            <h3>Proprietary trust network</h3>
-            <p>1,100+ parents, 160+ Trusted Partners. Every link is a real connection between parents. That's our moat.</p>
+      )}
+
+      {/* Agent Chat Bubble — appears after quiz */}
+      {showAgentBubble && (
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0,
+          background: C.white, borderRadius: "20px 20px 0 0", padding: "16px 16px 10px",
+          boxShadow: "0 -8px 30px rgba(0,0,0,0.12)", zIndex: 10, animation: "fadeIn 0.3s ease-out",
+          maxHeight: "65%", overflow: "auto" }}>
+          {/* Header */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 32, height: 32, borderRadius: "50%",
+                background: "linear-gradient(135deg, " + C.teal + ", #2BA5A5)",
+                display: "flex", alignItems: "center", justifyContent: "center", color: C.white, fontSize: 14 }}>✦</div>
+              <div>
+                <span style={{ fontWeight: 700, fontSize: 13, color: C.dark }}>Circles</span>
+                <div style={{ fontSize: 10, color: C.green }}>● Online</div>
+              </div>
+            </div>
+            <button onClick={handleDismissAll}
+              style={{ background: "none", border: "none", fontSize: 16, color: C.gray, cursor: "pointer" }}>✕</button>
+          </div>
+
+          {/* Messages */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {agentConvo.map((msg, i) => {
+              if (i > agentStep) return null;
+              return (
+                <div key={i} style={{ animation: "fadeIn 0.4s ease-out" }}>
+                  <div style={{ background: "#F0F7F7", borderRadius: "14px 14px 14px 4px",
+                    padding: "10px 14px", maxWidth: "90%", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+                    <div style={{ fontSize: 13, color: C.dark, lineHeight: 1.5 }}>{msg.text}</div>
+                    {msg.source && (
+                      <div style={{ fontSize: 10, color: C.teal, marginTop: 6, fontWeight: 600 }}>📍 {msg.source}</div>
+                    )}
+                  </div>
+                  {msg.cta && agentStep >= 2 && (
+                    <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                      <button onClick={() => { setShowAgentBubble(false); setShowUpgrade(true); setDismissed(true); }}
+                        style={{ background: C.teal, color: C.white, border: "none", borderRadius: 20,
+                          padding: "10px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                          boxShadow: "0 2px 8px rgba(26,122,122,0.3)" }}>
+                        Yes, connect me! 🎉
+                      </button>
+                      <button onClick={handleDismissAll}
+                        style={{ background: C.grayLight, color: C.gray, border: "none", borderRadius: 20,
+                          padding: "10px 16px", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
+                        Not now
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            {agentStep < 2 && (
+              <div style={{ display: "flex", gap: 4, padding: "8px 0" }}>
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.tealLight, animation: "fadeIn 0.5s ease-out infinite alternate" }} />
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.tealLight, animation: "fadeIn 0.5s ease-out 0.15s infinite alternate" }} />
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.tealLight, animation: "fadeIn 0.5s ease-out 0.3s infinite alternate" }} />
+              </div>
+            )}
           </div>
         </div>
-      </div>
-
-      <!-- Bottom bar -->
-      <div class="bottom-bar">
-        <p><strong>This trust network is the foundation.</strong> When AI reads it, every suggestion, every match, every recommendation traces back to someone you trust.</p>
-      </div>
-
-      <div class="logo">Circles</div>
+      )}
     </div>
-  </div>
-</div>
-
-<script>
-function showSection(id, btn) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
+  );
 }
+
+function AgentChat() {
+  const [visibleMessages, setVisibleMessages] = useState([]);
+  const scrollRef = useRef(null);
+  const hasRun = useRef(false);
+
+  useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
+    agentMessages.forEach((msg, i) => {
+      setTimeout(() => {
+        setVisibleMessages(prev => [...prev, msg]);
+      }, msg.delay || 0);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [visibleMessages]);
+
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: "8px 16px 12px", display: "flex", alignItems: "center", gap: 10,
+        borderBottom: "1px solid #E8E8E8", background: C.white }}>
+        <div style={{ width: 36, height: 36, borderRadius: "50%",
+          background: "linear-gradient(135deg, " + C.teal + ", #2BA5A5)",
+          display: "flex", alignItems: "center", justifyContent: "center", color: C.white, fontSize: 16 }}>✦</div>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: 15, color: C.dark }}>Circles</div>
+          <div style={{ fontSize: 11, color: C.green }}>● Online</div>
+        </div>
+      </div>
+      <div ref={scrollRef} style={{ flex: 1, overflow: "auto", padding: "12px 16px",
+        display: "flex", flexDirection: "column", gap: 8 }}>
+        {visibleMessages.map((msg, i) => (
+          <div key={i} style={{ display: "flex", justifyContent: msg.type === "user" ? "flex-end" : "flex-start",
+            animation: "fadeIn 0.3s ease-out" }}>
+            <div style={{ maxWidth: "80%", background: msg.type === "user" ? C.tealLight : C.white,
+              borderRadius: msg.type === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+              padding: "10px 14px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+              <div style={{ fontSize: 13, color: C.dark, lineHeight: 1.5 }}>{msg.text}</div>
+              {msg.source && (
+                <div style={{ fontSize: 10, color: C.teal, marginTop: 6, fontWeight: 600 }}>📍 {msg.source}</div>
+              )}
+              <div style={{ fontSize: 10, color: C.gray, marginTop: 4,
+                textAlign: msg.type === "user" ? "right" : "left" }}>{msg.time}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ padding: "10px 16px", background: C.white, borderTop: "1px solid #E8E8E8",
+        display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ flex: 1, background: C.grayLight, borderRadius: 20, padding: "10px 16px",
+          fontSize: 13, color: "#BBB" }}>Ask Circles anything...</div>
+        <div style={{ width: 36, height: 36, borderRadius: "50%", background: C.teal,
+          display: "flex", alignItems: "center", justifyContent: "center", color: C.white,
+          fontSize: 16, cursor: "pointer" }}>↑</div>
+      </div>
+    </div>
+  );
+}
+
+function NetworkScreen() {
+  return (
+    <div style={{ flex: 1, overflow: "auto", padding: "0 16px" }}>
+      <div style={{ padding: "8px 0 12px" }}>
+        <span style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 800, fontSize: 20, color: C.dark }}>Your Trust Network</span>
+        <p style={{ fontSize: 12.5, color: C.gray, marginTop: 4, lineHeight: 1.4 }}>
+          Every recommendation traces back to someone you know.
+        </p>
+      </div>
+      <div style={{ background: C.white, borderRadius: 16, padding: 20, marginBottom: 16,
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)", position: "relative", minHeight: 280 }}>
+        <div style={{ position: "absolute", left: "50%", top: 30, transform: "translateX(-50%)",
+          display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2 }}>
+          <div style={{ width: 50, height: 50, borderRadius: "50%", background: C.teal, color: C.white,
+            display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14,
+            boxShadow: "0 0 0 3px " + C.white + ", 0 0 0 5px " + C.teal }}>You</div>
+        </div>
+        {[
+          { name: "Clara M.", x: "15%", y: 110 },
+          { name: "Priya S.", x: "50%", y: 120 },
+          { name: "James R.", x: "82%", y: 110 },
+        ].map((node, i) => (
+          <div key={i}>
+            <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }}>
+              <line x1="50%" y1="55" x2={node.x} y2={node.y + 18} stroke={C.tealLight} strokeWidth="2" strokeDasharray="4 3" />
+            </svg>
+            <div style={{ position: "absolute", left: node.x, top: node.y, transform: "translateX(-50%)",
+              display: "flex", flexDirection: "column", alignItems: "center", zIndex: 1 }}>
+              <div style={{ width: 40, height: 40, borderRadius: "50%", background: C.tealLight, color: C.teal,
+                display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 11 }}>
+                {node.name.split(" ").map(n => n[0]).join("")}
+              </div>
+              <span style={{ fontSize: 10, fontWeight: 600, color: C.dark, marginTop: 4 }}>{node.name}</span>
+            </div>
+          </div>
+        ))}
+        {[
+          { name: "Sofia K.", role: true, x: "5%", y: 200, px: "15%" },
+          { name: "Anna B.", x: "28%", y: 210, px: "15%" },
+          { name: "Dr. Chen", x: "42%", y: 210, px: "50%" },
+          { name: "Amara J.", role: true, x: "60%", y: 200, px: "50%" },
+          { name: "Woodland", x: "75%", y: 210, px: "82%" },
+          { name: "Tom H.", x: "93%", y: 200, px: "82%" },
+        ].map((node, i) => (
+          <div key={i}>
+            <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }}>
+              <line x1={node.px} y1="155" x2={node.x} y2={node.y + 14} stroke="#E8E8E8" strokeWidth="1.5" strokeDasharray="3 3" />
+            </svg>
+            <div style={{ position: "absolute", left: node.x, top: node.y, transform: "translateX(-50%)",
+              display: "flex", flexDirection: "column", alignItems: "center", zIndex: 1 }}>
+              <div style={{ width: 32, height: 32, borderRadius: "50%",
+                background: node.role ? C.bgWarm : C.grayLight,
+                color: node.role ? "#B85042" : C.gray,
+                display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 9 }}>
+                {node.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+              </div>
+              <span style={{ fontSize: 9, color: C.gray, marginTop: 3, textAlign: "center", maxWidth: 56, lineHeight: 1.2 }}>{node.name}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+        {[{ n: "12", l: "connections" }, { n: "3", l: "trusted partners" }, { n: "2nd", l: "deepest link" }].map((s, i) => (
+          <div key={i} style={{ flex: 1, background: C.white, borderRadius: 12, padding: "12px 10px",
+            textAlign: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: C.teal }}>{s.n}</div>
+            <div style={{ fontSize: 10, color: C.gray, marginTop: 2 }}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [screen, setScreen] = useState("home");
+  return (
+    <div style={{ minHeight: "100vh",
+      background: "linear-gradient(135deg, #E8F4F8 0%, #F2E0D0 50%, #E8F4F8 100%)",
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+      padding: "40px 20px" }}>
+      <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 28, fontWeight: 800,
+        color: C.dark, marginBottom: 4, textAlign: "center" }}>Circles</h1>
+      <p style={{ color: C.gray, fontSize: 14, marginBottom: 28, textAlign: "center" }}>App concept — UI/UX exploration</p>
+      <PhoneFrame>
+        {screen === "home" && <HomeScreen />}
+        {screen === "partners" && <PartnersScreen />}
+        {screen === "chat" && <AgentChat />}
+        {screen === "network" && <NetworkScreen />}
+        {screen === "post" && <HomeScreen />}
+        <TabBar active={screen} onNavigate={setScreen} />
+      </PhoneFrame>
+      <div style={{ marginTop: 24, display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+        {["home", "partners", "chat", "network"].map(s => (
+          <button key={s} onClick={() => setScreen(s)}
+            style={{ background: screen === s ? C.teal : C.white, color: screen === s ? C.white : C.dark,
+              border: "none", borderRadius: 20, padding: "8px 18px", fontSize: 13, fontWeight: 600,
+              cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", transition: "all 0.2s" }}>
+            {s === "home" ? "Home Feed" : s === "partners" ? "Trusted Partners" : s === "chat" ? "AI Agent" : "Trust Network"}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
 </script>
 </body>
 </html>
